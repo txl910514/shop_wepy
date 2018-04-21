@@ -1,0 +1,12 @@
+<template>
+  <text class="sub-title">招牌推荐</text>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class GoodsCart extends wepy.page {}
+</script>
+
+<style scoped>
+
+</style>
