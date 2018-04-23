@@ -1,0 +1,20 @@
+<template>
+  <Loading :init.sync="init"/>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Loading from '../../components/common/loading'
+  export default class ShopHome extends wepy.page {
+    data = {
+      init: false
+    }
+    components = {
+      Loading: Loading
+    }
+  }
+</script>
+
+<style scoped>
+
+</style>

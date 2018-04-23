@@ -46,7 +46,7 @@ export default class goods extends base {
         // 设置原价和当前价格
         detail.originalPrice = price
         detail.price = (price * rate).toFixed(2)
-      });
+      })
     } else {
       // 单规格数据处理
       goods.originalPrice = goods.sellPrice
