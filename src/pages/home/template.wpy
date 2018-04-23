@@ -1,7 +1,9 @@
 <template>
   <Loading :init.sync="init"/>
   <view class="template-box" wx:if="{{init}}">
-    <text>1111</text>
+    <repeat for="{{components}}" key="index" index="index" item="item">
+      1
+    </repeat>
   </view>
 </template>
 
@@ -10,6 +12,12 @@
   import auth from '../../api/auth'
   import Loading from '../../components/common/loading'
   import store from '../../store/utils'
+  import config from '../../api/config'
+  import { connect } from 'wepy-redux'
+  import base from '../../mixins/base'
+  @connect({
+    homePageId: store.get('homePageId')
+  })
   export default class IndexTemplate extends wepy.page {
     data = {
       init: false
@@ -17,16 +25,84 @@
     async onLoad ({pageId, sence}) {
       await auth.login()
       await store.init()
+      this.sence = sence
+      if (pageId) {
+        console.info(`[template] load template page id=${pageId}`)
+        this.pageId = pageId
+      } else if (this.homePageId) {
+        console.info(`[template] load home page`)
+        this.pageId = this.homePageId
+      }
+      const page = await config.layout(this.pageId)
+      this.renderTemplatePage(page)
+      this.loaded()
+      // 渲染导航栏
+      this.renderNavigationBar()
+      // 执行触发器
+      this.runTriggers()
+      console.log(this.components)
+    }
+    /**
+     * 运行触发器
+     */
+    runTriggers() {
+      this.triggers.forEach(trigger => {
+        const methodName = trigger.method
+        // 执行动态方法
+        if (methodName && typeof this[methodName] === 'function') {
+          const triggerMethod = this[methodName].bind(this)
+          triggerMethod()
+        }
+      })
+    }
+    /**
+     * 渲染标题栏
+     */
+    renderNavigationBar() {
+      if (this.param.navigation == null) {
+        return
+      }
+      const {titleText, backgroundColor, textStyle} = this.param.navigation
+      if (titleText) {
+        wepy.setNavigationBarTitle({
+          title: titleText
+        })
+      }
+      if (backgroundColor && textStyle) {
+        wepy.setNavigationBarColor({
+          backgroundColor: backgroundColor,
+          frontColor: textStyle
+        })
+      }
+    }
+    /**
+     * 渲染页面
+     */
+    renderTemplatePage(page) {
+      this.components = page.components
+      this.plugins = page.plugins
+      this.triggers = page.triggers
+      this.param = page.param
     }
     components = {
       Loading: Loading
     }
+    mixins = [base]
     config = {
       navigationBarTitleText: '首页'
     }
   }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+  @import "../../styles/variable";
+  .template-box{
+    width: 100%;
+    overflow-x: hidden;
+    .h-gap {
+      width: 100%;
+      height: 1px;
+      background-color: $color-border;
+    }
+  }
 </style>

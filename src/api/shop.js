@@ -80,7 +80,6 @@ export default class shop extends base {
    * 获取店铺类型
    */
   static type() {
-    console.log(wepy.$instance.globalData.shopType)
     const type = wepy.$instance.globalData.shopType
     return this.TYPE[type]
   }

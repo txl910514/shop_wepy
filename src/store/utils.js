@@ -21,6 +21,16 @@ const INIT_KEY = ['config', 'coupon']
 const CACHE_TIMEOUT = 5 * 60 * 1000
 // 嵌套字段，需要拆解缓存
 const NESTED_KEY = ['config', 'member', 'coupon']
+
+/**
+ * 构造取值器
+ */
+const get = key => {
+  return (state) => {
+    return state.cache[key]
+  }
+}
+
 /**
  * 保存数据
  */
@@ -53,7 +63,7 @@ const init = async () => {
     // 开始初始化
     console.info('[store] start init store')
     isLoading = true
-    await use(...INIT_KEY)
+    await use(INIT_KEY)
     // 清空等待队列
     isLoading = false
     loadingQueue.forEach(callback => callback())
@@ -64,7 +74,7 @@ const init = async () => {
 /**
  * 加载指定字段的数据，并发加载，一次性返回，已经加载的数据不会再次加载
  */
-const use = async (...fields) => {
+const use = async (fields) => {
   // 过滤已加载完毕的字段
   const fetchFileds = fields.filter(field => !exists(field))
   if (fetchFileds.length > 0) {
@@ -101,7 +111,7 @@ const load = async (fields) => {
 const exists = key => {
   // 判断是否初始化过
   if (meta[key] == null || meta[key].init !== true) {
-    return false;
+    return false
   }
   // 判断是否过期
   const updateTime = meta[key].updateTime
@@ -122,7 +132,6 @@ const isNested = field => {
 const fetch = (field) => {
   // 先更新元数据
   updateMeta(field)
-  console.log(field)
   // 再获取Promise对象
   switch (field) {
     case 'config':
@@ -150,7 +159,6 @@ const fetch = (field) => {
  * 更新元数据
  */
 const updateMeta = (field) => {
-  console.log(field)
   if (meta[field] == null) {
     meta[field] = {}
     meta[field].init = true
@@ -158,4 +166,4 @@ const updateMeta = (field) => {
   meta[field].updateTime = new Date().getTime()
 }
 
-export default { init }
+export default { get, init }

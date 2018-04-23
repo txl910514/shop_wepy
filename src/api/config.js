@@ -4,6 +4,18 @@ import shop from './shop'
 import member from './member'
 
 export default class config extends base {
+  static fieldsToCopy = {
+    SWIPER: ['height'],
+    IMAGE_BOX: ['height', 'width', 'isTitle'],
+    GOODS_BOX: ['isCart', 'isPrice', 'isGoodsName', 'isSales', 'skuMode', 'isTips']
+  }
+  /**
+   * 获取布局视图
+   */
+  static layout(pageId) {
+    const url = `${this.baseUrl}/layout/pages/${pageId}`
+    return this.get(url).then(data => this._processPage(data.message))
+  }
   /**
    * 获取店铺完整配置信息
    */
@@ -80,5 +92,50 @@ export default class config extends base {
         }
         return this.copyParamToData(component)
       })
+  }
+  /**
+   * 处理页面的插件与触发器
+   */
+  static processPlugins (data) {
+    const plugins = []
+    const triggers = []
+    data.forEach(item => {
+      if (item.param) {
+        const param = JSON.parse(item.param)
+        Object.assign(item, param)
+        item.param = null
+      }
+      if (item.type.indexOf('_TRIGGER') !== -1) {
+        triggers.push(item)
+      } else {
+        plugins.push(item)
+      }
+    })
+    return {triggers, plugins}
+  }
+  /**
+   * 处理页面的配置参数
+   */
+  static processPageParam(data) {
+    if (data == null || data === '') {
+      return {}
+    } else {
+      return JSON.parse(data)
+    }
+  }
+  /**
+   * 拷贝配置参数
+   */
+  static copyParamToData(component) {
+    const {data, type} = component
+    const fields = this.fieldsToCopy[type]
+    if (fields != null) {
+      data.forEach(item => {
+        fields.forEach(field => {
+          item[field] = component[field]
+        })
+      })
+    }
+    return component
   }
 }

@@ -18,7 +18,20 @@ export default class Tips {
         fail: res => {
           reject(res)
         }
-      });
-    });
+      })
+    })
+  }
+  /**
+   * 加载完毕
+   */
+  static loaded () {
+    if (this.isLoading) {
+      this.isLoading = false
+      if (wepy.hideLoading) {
+        wepy.hideLoading()
+      } else {
+        wepy.hideNavigationBarLoading()
+      }
+    }
   }
 }

@@ -19,7 +19,35 @@ export default class extends wepy.app {
     auth: {},
     baseUrl: 'https://www.easy-mock.com/mock/5ab7c9627a7afd3099d16b4c/customer',
     appCode: 'owVHb1gHrvktni80kjMlFMzSDJDWY0xR',
-    shopType: '1'
+    shopType: '1',
+    pageParams: {
+      'pages/goods/category': {
+        buyPanelType: 'POPUP',
+        isCoupon: false
+      },
+      'pages/goods/detail': {
+        buyPanelType: 'SLIDER',
+        cartType: 'BAR',
+        isCoupon: true,
+        isComment: true,
+        isContact: true,
+        isShare: true,
+        isSales: true
+      },
+      'pages/goods/search': {
+        hotKeywords: [
+          '抽纸',
+          '卷纸',
+          '面巾纸',
+          '卫生巾',
+          '湿纸巾',
+          '维达',
+          '维达',
+          '波斯猫',
+          '妙洁'
+        ]
+      }
+    }
   }
   config = {
     pages: [
